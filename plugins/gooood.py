@@ -4,8 +4,8 @@ url: https://www.gooood.cn/
 """
 
 # name: gooood.py
-# version: 0.0.1
-# date: 2022/2/9 21:17
+# version: 0.0.2
+# date: 2022/2/21 19:38
 # desc:
 
 import re
@@ -63,7 +63,7 @@ class Parser(BaseParser):
                         index_start_flag = False
 
     def parse_by_slug(self):
-        slug_pat = re.compile("/(?P<slug>[a-z-]+?)\\.htm")
+        slug_pat = re.compile("/(?P<slug>[a-z0-9-]+?)\\.htm")
         result = slug_pat.search(self.url)
         params = result.groupdict()
         url = API_URL.format("posts/byslug")
@@ -143,7 +143,7 @@ class Parser(BaseParser):
         # https://www.gooood.cn/category/type/page/2
         # https://www.gooood.cn/category/type/architecture
         # https://www.gooood.cn/category/type/architecture/2
-        series_pat = re.compile("/category/(series|type)(?:/([a-z-]+))?(?:(?:/page/|/)(\\d+))?/?$")
+        series_pat = re.compile("/category/(series|type)(?:/([a-z0-9-]+))?(?:(?:/page/|/)(\\d+))?/?$")
         result = series_pat.search(self.url)
 
         slug = result.group(2) or result.group(1)
@@ -189,8 +189,9 @@ class Parser(BaseParser):
         if re.match("(?:/page/\\d+?)?/?$", url_path):
             return self.call_parse(self.parse_index)
 
+        # https://www.gooood.cn/teviot-house-sao-paulo-by-casa100-architecture.htm
         # https://www.gooood.cn/cornell-tech-hotel-and-education-center-by-snohetta.htm
-        if re.match("/[a-z-]+?\\.htm$", url_path):
+        elif re.match("/[a-z0-9-]+?\\.htm$", url_path):
             return self.call_parse(self.parse_by_slug)
 
         # https://www.gooood.cn/filter/type/all/country/all/material/all/office/all

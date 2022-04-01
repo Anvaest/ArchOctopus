@@ -38,7 +38,10 @@ def get_domain_from_url(url: str):
     for k, v in regexps.items():
         if v.match(domain):
             return k
-    replacements = [('www\\.|\\.com\\.cn|\\.com|\\.cn|\\.net', ''), ('\\.', '_')]
+    replacements = [('www\\.', ''),
+                    ('(\\.com|\\.org|\\.info|\\.net|\\.biz|'
+                     '\\.com\\.cn|\\.cn|\\.jp|\\.tw|\\.hk|\\.us|\\.es|\\.br|\\.fr|\\.it|\\.sg)$', ''),  # 常见顶级域名
+                    ('\\.', '_')]
     for old, new in replacements:
         domain = re.sub(old, new, domain)
     return domain

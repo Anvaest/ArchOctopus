@@ -562,10 +562,16 @@ class Pinterest(Account):
         pws_data = html_bs.find("script", id="__PWS_DATA__")
         pws_data_json = json.loads(pws_data.get_text())
 
+        # with open("pinterest_login.json", 'w', encoding="utf-8") as f:
+        #     f.write(pws_data.get_text())
+
         if not pws_data_json.get("isAuthenticated"):
             raise AccountError(f"登录失败: {self.home_url}")
 
-        raw_user_info = pws_data_json["props"]["initialReduxState"]["viewer"]
+        try:
+            raw_user_info = pws_data_json["props"]["initialReduxState"]["viewer"]
+        except KeyError:
+            raw_user_info = pws_data_json["props"]["initialReduxState"]["viewerDeprecatedUseContextInstead"]
 
         result["raw_user_info"] = raw_user_info
         result["is_connected"] = True

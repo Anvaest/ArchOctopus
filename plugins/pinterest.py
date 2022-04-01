@@ -4,8 +4,8 @@ url: https://www.pinterest.com/
 """
 
 # name: pinterest.py
-# version: 0.0.1
-# date: 2022/2/9 21:17
+# version: 0.0.2
+# date: 2022/04/01 01:30
 # desc:
 
 import json
@@ -451,7 +451,10 @@ class Parser(BaseParser):
             pws_data = html_bs.find("script", id="__PWS_DATA__")
             pws_data_json = json.loads(pws_data.get_text())
 
-            data = pws_data_json["props"]["initialReduxState"]["boards"]["content"]
+            try:
+                data = pws_data_json["props"]["initialReduxState"]["boards"]["content"]
+            except KeyError:
+                data = pws_data_json["props"]["initialReduxState"]["boards"]
             board_data = data.popitem()[1]
 
             board_id = board_data["id"]

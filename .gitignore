@@ -147,3 +147,4 @@ dmypy.json
 gui/mac_gui.wxg
 gui/msw_gui.wxg
 /resource/
+/AppDataCloud/

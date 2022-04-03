@@ -4,8 +4,8 @@ url: https://www.pinterest.com/
 """
 
 # name: pinterest.py
-# version: 0.0.2
-# date: 2022/04/01 01:30
+# version: 0.0.3
+# date: 2022/04/03 04:00
 # desc:
 
 import json
@@ -29,6 +29,8 @@ USER_HOME_FEED_RESOURCE = 'https://www.pinterest.com/resource/UserHomefeedResour
 BOARD_RESOURCE = 'https://www.pinterest.com/resource/BoardResource/get/'
 BOARD_FEED_RESOURCE = 'https://www.pinterest.com/resource/BoardFeedResource/get/'
 BOARD_SECTION_PINS_RESOURCE = 'https://www.pinterest.com/resource/BoardSectionPinsResource/get/'
+
+BOARDLESS_PINS_RESOURCE = 'https://www.pinterest.com/resource/BoardlessPinsResource/get/'
 
 # search
 BASE_SEARCH_RESOURCE = 'https://www.pinterest.com/resource/BaseSearchResource/get/'
@@ -537,7 +539,14 @@ class Parser(BaseParser):
                                                     url=board["url"],
                                                     title=self.cleanup(board["name"]))
             else:
+                # TODO 当第一次请求为空时，存在未保存到任何画板的图片时 - BoardlessPinsResource
                 break
+
+    def parse_boardless(self):
+        """
+        BoardLess
+        """
+        pass
 
     def parse_people_created(self):
         """
@@ -700,6 +709,13 @@ class Parser(BaseParser):
         elif re.match("/search/videos/?$", url_path):
             return self.call_parse(self.abort, "暂不支持视频下载")
 
+        # https://www.pinterest.com/kane8616/_saved/
+        elif re.match("/(?!search|pin)[^/]*/_saved/?$", url_path):
+            result = re.search("/([^/]*)/_saved/?", self.url)
+            username = result.group(1)
+            self.task_name = f"People-\'{username}\'"
+            return self.call_parse(self.parse_people_saved)
+
         # https://www.pinterest.com/corttchan/render/
         elif re.match("/(?!search|pin)[^/]*/[^/]+/?$", url_path):
             result = re.search("/([^/]*)/([^/]+)/?$", self.url)
@@ -707,13 +723,6 @@ class Parser(BaseParser):
             slug = unquote(result.group(2))
             self.task_name = f"Board-\'{username}-{slug}\'"
             return self.call_parse(self.parse_board, response)
-
-        # https://www.pinterest.com/kane8616/_saved/
-        elif re.match("/(?!search|pin)[^/]*/_saved/?$", url_path):
-            result = re.search("/([^/]*)/_saved/?", self.url)
-            username = result.group(1)
-            self.task_name = f"People-\'{username}\'"
-            return self.call_parse(self.parse_people_saved)
 
         # https://www.pinterest.com/kane8616/_created/
         elif re.match("/(?!search|pin)[^/]+/_created/?$", url_path):

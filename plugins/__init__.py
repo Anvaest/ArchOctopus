@@ -3,8 +3,8 @@ ArchOctopus页面对象解析模块
 """
 
 # name: __init__.py
-# version: 0.0.1
-# date: 2022/2/9 21:13
+# version: 0.0.2
+# date: 2022/04/03 17:50
 # desc:
 
 import threading
@@ -350,6 +350,7 @@ class BaseParser(threading.Thread):
         self.logger.info("解析开始: %s --> %s", self.friend_name, self.url)
         try:
             response = self.request("GET", self.url)
+            response.raise_for_status()
             # 判断是否时图片链接
             content_type = response.headers.get('content-type')
             self.logger.debug("解析页面类型: %s", content_type)

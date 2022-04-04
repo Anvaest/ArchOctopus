@@ -4,8 +4,8 @@ url: https://www.huaban.com
 """
 
 # name: huaban.py
-# version: 0.0.2
-# date: 2022/2/15 14:51
+# version: 0.0.3
+# date: 2022/04/04 18:23
 # desc:
 
 import re
@@ -481,7 +481,11 @@ class Parser(BaseParser):
         html = kwargs.get("html")
         response = kwargs.get("response")
 
-        is_new_version = re.search("\"切换旧版\"", html)
+        for kw in ("\"切换旧版\"", "id=\"__NEXT_DATA__\""):
+            is_new_version = re.search(kw, html)
+            if is_new_version:
+                break
+
         url_path = self.url_parser.get_path()
         # 新版页面
         if is_new_version:
